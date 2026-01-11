@@ -52,6 +52,15 @@ on:
         description: "Package formats (comma-separated: deb,appimage,rpm)"
         required: false
         default: "deb"
+      installer_language:
+        description: "Options include zh-CN, ja-JP, Default is en-US"
+        required: true
+        default: "en-US"
+        type: choice
+        options:
+          - "en-US"
+          - "zh-CN"
+          - "ja-JP"
 
 jobs:
   build:
@@ -120,6 +129,10 @@ jobs:
             ARGS="$ARGS --hide-title-bar"
           fi
 
+          if ("${{ inputs.installer_language }}" -ne "") {
+            $args += "--installer-language", "${{ inputs.installer_language }}"
+          }
+
           if [ "${{ inputs.multi_arch }}" == "true" ]; then
             ARGS="$ARGS --multi-arch"
           fi
@@ -156,6 +169,10 @@ jobs:
 
           if ("${{ inputs.hide_title_bar }}" -eq "true") {
             $args += "--hide-title-bar"
+          }
+
+          if ("${{ inputs.installer_language }}" -ne "") {
+            $args += "--installer-language", "${{ inputs.installer_language }}"
           }
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
