@@ -157,7 +157,7 @@ jobs:
           fi
           
           if [ "${{ inputs.hide_on_close }}" == "true" ]; then
-            ARGS="$ARGS --hide-on-close true"
+            ARGS="$ARGS --hide-on-close ${{ inputs.hide_on_close }}"
           fi
           
           if [ "${{ inputs.keep_binary }}" == "true" ]; then
@@ -207,7 +207,7 @@ jobs:
           }
           
           if ("${{ inputs.hide_on_close }}" -eq "true") {
-            $args += "--hide-on-close true "
+            $args += "--hide-on-close", "${{ inputs.hide_on_close }}"
           }
           
           if ("${{ inputs.keep_binary }}" -eq "true" ) {
