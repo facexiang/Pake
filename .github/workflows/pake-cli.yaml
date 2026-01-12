@@ -52,8 +52,23 @@ on:
         description: "Package formats (comma-separated: deb,appimage,rpm)"
         required: false
         default: "deb"
+      force_internal_navigation:
+        description: "Keeps every clicked link inside the Pake window"
+        required: false
+        type: boolean
+        default: false
+      hide_on_close:
+        description: "Hide window when clicking close button"
+        required: false
+        type: boolean
+        default: false
+      keep_binary:
+        description: "Keep the raw binary file alongside the installer"
+        required: false
+        type: boolean
+        default: false
       installer_language:
-        description: "Options include zh-CN, ja-JP, Default is en-US"
+        description: "Set language. Options include zh-CN, ja-JP. Default is en-US"
         required: true
         default: "en-US"
         type: choice
@@ -129,12 +144,24 @@ jobs:
             ARGS="$ARGS --hide-title-bar"
           fi
 
-          if ("${{ inputs.installer_language }}" -ne "") {
-            $args += "--installer-language", "${{ inputs.installer_language }}"
-          }
-
           if [ "${{ inputs.multi_arch }}" == "true" ]; then
             ARGS="$ARGS --multi-arch"
+          fi
+
+          if [ "${{ inputs.installer_language }}" -ne "" ]; then
+            ARGS="$ARGS --installer-language ${{ inputs.installer_language }}"
+          fi
+
+          if [ "${{ inputs.force_internal_navigation }}" == "true" ]; then
+            ARGS="$ARGS --force-internal-navigation"
+          fi
+          
+          if [ "${{ inputs.hide_on_close }}" == "true" ]; then
+            ARGS="$ARGS --hide-on-close true"
+          fi
+          
+          if [ "${{ inputs.keep_binary }}" == "true" ]; then
+            ARGS="$ARGS --keep-binary"
           fi
 
           if [ -n "${{ inputs.targets }}" ] && [ "${{ runner.os }}" == "Linux" ]; then
@@ -173,6 +200,18 @@ jobs:
 
           if ("${{ inputs.installer_language }}" -ne "") {
             $args += "--installer-language", "${{ inputs.installer_language }}"
+          }
+
+          if ("${{ inputs.force_internal_navigation }}" -eq "true") {
+            $args += "--force-internal-navigation"
+          }
+          
+          if ("${{ inputs.hide_on_close }}" -eq "true") {
+            $args += "--hide-on-close true "
+          }
+          
+          if ("${{ inputs.keep_binary }}" -eq "true" ) {
+            $args += "--keep-binary"
           }
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
