@@ -67,6 +67,21 @@ on:
         required: false
         type: boolean
         default: false
+      show_system_tray:
+        description: "Display the application in system tray"
+        required: false
+        type: boolean
+        default: false
+      maximize:
+        description: "Application launches with a maximized window"
+        required: false
+        type: boolean
+        default: false
+      new_window:
+        description: "Allow new window for third-party login authorization"
+        required: false
+        type: boolean
+        default: false
       installer_language:
         description: "Set language. Options include zh-CN, ja-JP. Default is en-US"
         required: true
@@ -164,6 +179,18 @@ jobs:
             ARGS="$ARGS --keep-binary"
           fi
 
+          if [ "${{ inputs.show_system_tray }}" == "true" ]; then
+            ARGS="$ARGS --show-system-tray"
+          fi
+          
+          if [ "${{ inputs.maximize }}" == "true" ]; then
+            ARGS="$ARGS --maximize"
+          fi
+          
+          if [ "${{ inputs.new_window }}" == "true" ]; then
+            ARGS="$ARGS --new-window"
+          fi
+
           if [ -n "${{ inputs.targets }}" ] && [ "${{ runner.os }}" == "Linux" ]; then
             ARGS="$ARGS --targets ${{ inputs.targets }}"
           fi
@@ -212,6 +239,18 @@ jobs:
           
           if ("${{ inputs.keep_binary }}" -eq "true" ) {
             $args += "--keep-binary"
+          }
+
+          if ( "${{ inputs.show_system_tray }}" -eq "true" ) {
+            $args += "--show-system-tray"
+          }
+          
+          if ( "${{ inputs.maximize }}" -eq "true" ) {
+            $args += "--maximize"
+          }
+          
+          if ( "${{ inputs.new_window }}" -eq "true" ) {
+            $args += "--new-window"
           }
 
           Write-Host "Running: node dist/cli.js $($args -join ' ')"
